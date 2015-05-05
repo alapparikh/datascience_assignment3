@@ -3,7 +3,7 @@ import numpy as np
 import cPickle as pickle
 import math
 
-percentage = 0.5
+percentage = 0.75
 k_most_similar = 5
 u2m = 'user_to_movie'
 m2u2r = 'movie_to_user_to_rating'
@@ -56,7 +56,7 @@ def similarity (movie_id_1, movie_id_2):
         if user <= cutoff_user:
             magnitude2 = magnitude2 + movie_to_user_to_rating[movie_id_2][user]**2
 
-    if (float((math.sqrt(magnitude1) + math.sqrt(magnitude2)))):
+    if (float((math.sqrt(magnitude1) + math.sqrt(magnitude2)))) == 0:
         return -1.
     return product/float((math.sqrt(magnitude1) + math.sqrt(magnitude2)))
 
