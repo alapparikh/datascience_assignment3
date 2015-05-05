@@ -56,7 +56,8 @@ def similarity (movie_id_1, movie_id_2):
         if user <= cutoff_user:
             magnitude2 = magnitude2 + movie_to_user_to_rating[movie_id_2][user]**2
 
-    if (float((math.sqrt(magnitude1) + math.sqrt(magnitude2)))) == 0:
+
+    if (float((math.sqrt(magnitude1) + math.sqrt(magnitude2))) == 0.0):
         return -1.
     return product/float((math.sqrt(magnitude1) + math.sqrt(magnitude2)))
 
@@ -68,7 +69,7 @@ def predicted_rating (most_similar, uid):
         numerator = numerator + movie_to_user_to_rating[tupl[1]][uid]*tupl[0]
         denominator = denominator + tupl[0]
 
-    if (denominator == 0):
+    if (denominator == 0.0):
         return -1.
     return numerator/denominator
     
@@ -81,28 +82,29 @@ if __name__ == '__main__':
     prepData()
     print 'Length of test dict: ', len(movie_to_user_to_rating_predicted)
     print 'Length of true test dict: ', len(movie_to_user_to_rating_true)
-
     
     print("crunch time")
-    maxSimilarities = []
     for mid in movie_to_user_to_rating_true.keys():
         for uid in movie_to_user_to_rating_true[mid].keys():
+            maxSimilarities = []
             #guaranteed at least 10 reviews
             for mid_rated in user_to_movie[uid]:
                 #get similarity score
                     #calculate mean score for each movie    
                 #get most_similar movies
                 sim_score = similarity(mid, mid_rated)
+
                 if len(maxSimilarities) < k_most_similar:
                     maxSimilarities.append((sim_score, mid_rated))
                 else:                                
                     min_max_sim_score = min(maxSimilarities)
                     if sim_score > min_max_sim_score:
-                        maxSimilarities.append((sim_score, mid_rated))
                         maxSimilarities.remove(min_max_sim_score)
+                        maxSimilarities.append((sim_score, mid_rated))
                         
                 #calculate rating and assign rating into movie_to_user_to_rating_predicted
             movie_to_user_to_rating_predicted[mid][uid] = predicted_rating(maxSimilarities, uid)
+            print 'Predicted rating for mid: ', mid, 'and user id: ', uid, 'is: ', predicted_rating(maxSimilarities, uid)
                 #DONE
 
 print "test"
