@@ -49,6 +49,7 @@ def similarity (movie_id_1, movie_id_2):
         magnitude1 = magnitude1 + movie_to_user_to_rating[movie_id_1][user]**2
 
     # Movie that it is being compared with
+    max_user = max(user_to_movie.keys())
     cutoff_user = int(percentage * float(max_user))
     for user in movie_to_user_to_rating[movie_id_2]:
         if user <= cutoff_user:
@@ -69,9 +70,10 @@ if __name__ == '__main__':
     user_to_movie = loadData(u2m)
     movie_to_user_to_rating = loadData(m2u2r)
     
+    print("getting data")
     prepData()
     
-
+    print("crunch time")
     maxSimilarities = []
     for mid in movie_to_user_to_rating_true.keys():
         for uid in movie_to_user_to_rating_true[mid].keys():
@@ -81,7 +83,7 @@ if __name__ == '__main__':
                     #calculate mean score for each movie    
                 #get most_similar movies
                 sim_score = similarity(mid, mid_rated)
-                if len(maxSimilarities) < most_similar:
+                if len(maxSimilarities) < k_most_similar:
                     maxSimilarities.append((sim_score, mid_rated))
                 else:                                
                     min_max_sim_score = min(maxSimilarities)
@@ -90,9 +92,14 @@ if __name__ == '__main__':
                         maxSimilarities.remove(min_max_sim_score)
                         
                 #calculate rating and assign rating into movie_to_user_to_rating_predicted
-            movie_to_user_to_rating_predicted[mid][uid] = rating(maxSimilarities, uid)
+            movie_to_user_to_rating_predicted[mid][uid] = predicted_rating(maxSimilarities, uid)
                 #DONE
 
-    
-    
-    
+print "test"
+addition = 0
+for mid in movie_to_user_to_rating_predicted.keys():
+    for uid in movie_to_user_to_rating_predicted[mid]:
+        sum += (movie_to_user_to_rating_predicted[mid][uid] - movie_to_user_to_rating_true[mid][uid])**2
+        
+RMSE = math.sqrt(addition)
+print RMSE
