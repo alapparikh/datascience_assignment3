@@ -4,7 +4,6 @@ import cPickle as pickle
 
 # Global variables
 
-
 def read_movies():
 	count = 0
 	with open("data/movies.csv") as moviefile:
@@ -69,3 +68,4 @@ def loadData(title):
 
 if __name__ == '__main__':
 	user_to_movie, movie_to_user_to_rating = read_ratings()
+	
