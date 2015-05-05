@@ -1,9 +1,10 @@
 import csv
 import numpy as np
 import cPickle as pickle
+import math
 
 percentage = 0.5
-most_similar = 5
+k_most_similar = 5
 u2m = 'user_to_movie'
 m2u2r = 'movie_to_user_to_rating'
 user_to_movie = {}
@@ -35,6 +36,33 @@ def prepData():
                 del movie_to_user_to_rating[mid][user]
                 user_to_movie[user].remove(mid)
 
+def similarity (movie_id_1, movie_id_2):
+    product = 0.0
+    magnitude1 = 0.0
+    magnitude2 = 0.0
+
+    # Movie to be predicted
+    for user in movie_to_user_to_rating[movie_id_1]:
+        if user in movie_to_user_to_rating[movie_id_2]:
+            product = product + float(movie_to_user_to_rating[movie_id_1][user])*float(movie_to_user_to_rating[movie_id_2][user])
+        magnitude1 = magnitude1 + movie_to_user_to_rating[movie_id_1][user]**2
+
+    # Movie that it is being compared with
+    cutoff_user = int(percentage * float(max_user))
+    for user in movie_to_user_to_rating[movie_id_2]:
+        if user <= cutoff_user:
+            magnitude2 = magnitude2 + movie_to_user_to_rating[movie_id_2][user]**2
+
+    return product/(math.sqrt(magnitude1) + math.sqrt(magnitude2))
+
+def predicted_rating (most_similar, uid):
+
+    numerator = 0.0
+    denominator = 0.0
+    for tupl in most_similar:
+        numerator = numerator + movie_to_user_to_rating[tupl[1]][uid]*tupl[0]
+        denominator = denominator + tupl[0]
+    return numerator/denominator
     
 if __name__ == '__main__':
     user_to_movie = loadData(u2m)
