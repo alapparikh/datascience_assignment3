@@ -56,11 +56,7 @@ def read_ratings():
 	print len(user_to_movie)
 	print len(movie_to_user_to_rating)
 
-	# with open("data/ratings.csv") as ratingsfile:
-
-	# 	a = csv.reader(ratingsfile)
-	# 	next(a)
-	# 	for row in a:
+	return user_to_movie, movie_to_user_to_rating
 
 def dumpData(title, data):
     with open(str(title)+'.p', 'wb') as fp:
@@ -72,4 +68,4 @@ def loadData(title):
     return data
 
 if __name__ == '__main__':
-	read_ratings()
+	user_to_movie, movie_to_user_to_rating = read_ratings()
