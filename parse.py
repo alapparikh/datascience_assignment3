@@ -20,6 +20,8 @@ def read_ratings():
 
 		highest_movie_id = 0
 		highest_user_id = 0
+		rating_sum = 0.0
+		count = 0
 
 		a = csv.reader(ratingsfile)
 		next(a)
@@ -38,6 +40,8 @@ def read_ratings():
 			user = int(row[0])
 			movie = int(row[1])
 			rating = float(row[2])
+			rating_sum += rating
+			count += 1
 
 			if user not in user_to_movie:
 				user_to_movie[user] = [movie]
@@ -49,6 +53,9 @@ def read_ratings():
 				movie_to_user_to_rating[movie][user] = rating
 			else:
 				movie_to_user_to_rating[movie][user] = rating
+
+		overall_avg = rating_sum/count
+		movie_to_user_to_rating['overall_avg'] = overall_avg
 
 	ratingsfile.close()
 

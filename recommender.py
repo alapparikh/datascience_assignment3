@@ -3,7 +3,7 @@ import numpy as np
 import cPickle as pickle
 import math
 
-percentage = 0.95
+percentage = 0.99
 k_most_similar = 5
 u2m = 'user_to_movie'
 m2u2r = 'movie_to_user_to_rating'
@@ -11,7 +11,9 @@ user_to_movie = {}
 movie_to_user_to_rating = {}
 movie_to_user_to_rating_predicted = {}
 movie_to_user_to_rating_true = {}
-
+user_averages = {}
+cutoff_movie = 0
+cutoff_user = 0
 
 def loadData(title):
     with open(str(title)+'.p', 'rb') as fp:
@@ -52,8 +54,6 @@ def similarity (movie_id_1, movie_id_2):
         return 0.0
 
     # Movie that it is being compared with
-    max_user = max(user_to_movie.keys())
-    cutoff_user = int(percentage * float(max_user))
     for user in movie_to_user_to_rating[movie_id_2]:
         if user <= cutoff_user:
             magnitude2 = magnitude2 + movie_to_user_to_rating[movie_id_2][user]**2
@@ -62,6 +62,32 @@ def similarity (movie_id_1, movie_id_2):
     if (float((math.sqrt(magnitude1) + math.sqrt(magnitude2))) == 0.0):
         return -1.
     return product/float((math.sqrt(magnitude1) + math.sqrt(magnitude2)))
+
+def linear_regression (movie_id_1, uid):
+    movie_avg = 0.0
+    user_avg = 0.0
+    count = 0
+
+    if 'avg' not in movie_to_user_to_rating[movie_id_1]:
+        for user in movie_to_user_to_rating[movie_id_1]:
+            movie_avg += movie_to_user_to_rating[movie_id_1][user]
+            count += 1
+        movie_avg = movie_1_avg/count
+        movie_to_user_to_rating[movie_id_1]['avg'] = movie_avg
+    else:
+        movie_avg = movie_to_user_to_rating[movie_id_1]['avg']
+
+    count = 0
+    if uid not in user_averages:
+        for movie in user_to_movie[uid]:
+            user_avg += movie_to_user_to_rating[movie][uid]
+            count += 1
+        user_avg = user_avg/count
+    else:
+        user_avg = user_averages[uid]
+
+    return (movie_avg*user_avg)/movie_to_user_to_rating['overall_avg']
+
 
 def predicted_rating (most_similar, uid):
 
@@ -96,15 +122,16 @@ if __name__ == '__main__':
                     #calculate mean score for each movie    
                 #get most_similar movies
                 if len(set(movie_to_user_to_rating[mid].keys()).intersection(set(movie_to_user_to_rating[mid_rated].keys()))) == 0:
-                    continue
-
-                sim_score = similarity(mid, mid_rated)
+                    # Linear regression
+                    sim_score = linear_regression(mid, mid_rated)
+                else:
+                    sim_score = similarity(mid, mid_rated)
 
                 if len(maxSimilarities) < k_most_similar:
                     maxSimilarities.append((sim_score, mid_rated))
                 else:                                
                     min_max_sim_score = min(maxSimilarities)
-                    if sim_score > min_max_sim_score:
+                    if sim_score > min_max_sim_score: 
                         maxSimilarities.remove(min_max_sim_score)
                         maxSimilarities.append((sim_score, mid_rated))
                         
