@@ -62,7 +62,7 @@ def dumpData(title, data):
         pickle.dump(data, fp)
         
 def loadData(title):
-    with open(title, 'rb') as fp:
+    with open(str(title)+'.p', 'rb') as fp:
         data = pickle.load(fp)
     return data
 
