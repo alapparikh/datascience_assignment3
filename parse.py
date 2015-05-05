@@ -1,5 +1,6 @@
 import csv
 import numpy as np
+import cPickle as pickle
 
 # Global variables
 
@@ -61,6 +62,14 @@ def read_ratings():
 	# 	next(a)
 	# 	for row in a:
 
+def dumpData(title, data):
+    with open(str(title)+'.p', 'wb') as fp:
+        pickle.dump(data, fp)
+        
+def loadData(title):
+    with open(title, 'rb') as fp:
+        data = pickle.load(fp)
+    return data
 
 if __name__ == '__main__':
 	read_ratings()
