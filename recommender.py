@@ -55,7 +55,7 @@ def similarity (movie_id_1, movie_id_2):
         if user <= cutoff_user:
             magnitude2 = magnitude2 + movie_to_user_to_rating[movie_id_2][user]**2
 
-    return product/(math.sqrt(magnitude1) + math.sqrt(magnitude2))
+    return product/float((math.sqrt(magnitude1) + math.sqrt(magnitude2)))
 
 def predicted_rating (most_similar, uid):
 
