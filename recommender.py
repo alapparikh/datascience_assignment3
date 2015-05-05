@@ -122,5 +122,5 @@ for mid in movie_to_user_to_rating_predicted.keys():
     for uid in movie_to_user_to_rating_predicted[mid]:
         addition += (movie_to_user_to_rating_predicted[mid][uid] - movie_to_user_to_rating_true[mid][uid])**2
         count += 1
-RMSE = math.sqrt(addition)
+RMSE = math.sqrt(addition)/float(count)
 print RMSE
