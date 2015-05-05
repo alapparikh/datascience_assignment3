@@ -30,6 +30,7 @@ def prepData():
             movie_to_user_to_rating_predicted[mid] = {}
             movie_to_user_to_rating_true[mid] = {}
             for user in val.keys():                
+                #MAYBE OMIT THIS BECAUSE THE SPARSE POPULARIZATION OF -1s
                 movie_to_user_to_rating_predicted[mid][user] = -1
                 movie_to_user_to_rating_true[mid][user] = movie_to_user_to_rating[mid][user]
                 del movie_to_user_to_rating[mid][user]
@@ -42,15 +43,26 @@ if __name__ == '__main__':
     
     prepData()
     
+
+    maxSimilarities = []
     for mid in movie_to_user_to_rating_true.keys():
         for uid in movie_to_user_to_rating_true[mid].keys():
+            #guaranteed at least 10 reviews
             for mid_rated in user_to_movie[uid]:
                 #get similarity score
                     #calculate mean score for each movie    
                 #get most_similar movies
-                similarity(mid, mid_rated)
-                #calculate rating
-                #assign rating into movie_to_user_to_rating_predicted
+                sim_score = similarity(mid, mid_rated)
+                if len(maxSimilarities) < most_similar:
+                    maxSimilarities.append((sim_score, mid_rated))
+                else:                                
+                    min_max_sim_score = min(maxSimilarities)
+                    if sim_score > min_max_sim_score:
+                        maxSimilarities.append((sim_score, mid_rated))
+                        maxSimilarities.remove(min_max_sim_score)
+                        
+                #calculate rating and assign rating into movie_to_user_to_rating_predicted
+            movie_to_user_to_rating_predicted[mid][uid] = rating(maxSimilarities, uid)
                 #DONE
 
     
