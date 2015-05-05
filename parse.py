@@ -6,7 +6,7 @@ import cPickle as pickle
 
 def read_movies():
 	count = 0
-	with open("data/movies.csv") as moviefile:
+	with open("data/moviestest.csv") as moviefile:
 		a = csv.reader(moviefile)
 		for row in a:
 			#print ', '.join(row)
@@ -16,7 +16,7 @@ def read_movies():
 				break
 
 def read_ratings():
-	with open("data/ratings.csv") as ratingsfile:
+	with open("data/ratingstest.csv") as ratingsfile:
 
 		highest_movie_id = 0
 		highest_user_id = 0
@@ -69,8 +69,8 @@ def loadData(title):
 if __name__ == '__main__':
 	user_to_movie, movie_to_user_to_rating = read_ratings()
 	print 'Read in'
-	dumpData('movie_to_user_to_rating', movie_to_user_to_rating)
+	dumpData('movie_to_user_to_rating_test', movie_to_user_to_rating)
 	print 'Dumped 1'
-	dumpData('user_to_movie', user_to_movie)
+	dumpData('user_to_movie_test', user_to_movie)
 	print 'Dumped 2'
 	

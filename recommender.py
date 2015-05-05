@@ -3,7 +3,7 @@ import numpy as np
 import cPickle as pickle
 import math
 
-percentage = 0.75
+percentage = 0.95
 k_most_similar = 5
 u2m = 'user_to_movie'
 m2u2r = 'movie_to_user_to_rating'
