@@ -3,7 +3,7 @@ import numpy as np
 import cPickle as pickle
 import math
 
-percentage = 0.5
+percentage = 0.95
 k_most_similar = 5
 u2m = 'user_to_movie'
 m2u2r = 'movie_to_user_to_rating'
@@ -48,6 +48,8 @@ def similarity (movie_id_1, movie_id_2):
         if user in movie_to_user_to_rating[movie_id_2]:
             product = product + float(movie_to_user_to_rating[movie_id_1][user])*float(movie_to_user_to_rating[movie_id_2][user])
         magnitude1 = magnitude1 + movie_to_user_to_rating[movie_id_1][user]**2
+    if product == 0.0:
+        return 0.0
 
     # Movie that it is being compared with
     max_user = max(user_to_movie.keys())
@@ -87,10 +89,14 @@ if __name__ == '__main__':
         for uid in movie_to_user_to_rating_true[mid].keys():
             maxSimilarities = []
             #guaranteed at least 10 reviews
+            print 'Length of movies in train rated by given user: ', len(user_to_movie[uid])
             for mid_rated in user_to_movie[uid]:
                 #get similarity score
                     #calculate mean score for each movie    
                 #get most_similar movies
+                if len(set(movie_to_user_to_rating[mid].keys()).intersection(set(movie_to_user_to_rating[mid_rated].keys()))) == 0:
+                    continue
+
                 sim_score = similarity(mid, mid_rated)
 
                 if len(maxSimilarities) < k_most_similar:
@@ -102,12 +108,14 @@ if __name__ == '__main__':
                         maxSimilarities.append((sim_score, mid_rated))
                         
                 #calculate rating and assign rating into movie_to_user_to_rating_predicted
+            print maxSimilarities
             movie_to_user_to_rating_predicted[mid][uid] = predicted_rating(maxSimilarities, uid)
             print 'Predicted rating for mid: ', mid, 'and user id: ', uid, 'is: ', predicted_rating(maxSimilarities, uid)
+            print '**********'
                 #DONE
 
 print "test"
-addition = 0
+addition = 0.0
 for mid in movie_to_user_to_rating_predicted.keys():
     for uid in movie_to_user_to_rating_predicted[mid]:
         addition += (movie_to_user_to_rating_predicted[mid][uid] - movie_to_user_to_rating_true[mid][uid])**2
