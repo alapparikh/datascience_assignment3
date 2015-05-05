@@ -29,16 +29,31 @@ def read_ratings():
 			if int(row[1]) > highest_movie_id:
 				highest_movie_id = int(row[1])
 
-		utility_matrix = np.zeros((highest_user_id, highest_movie_id))
+		user_to_movie = {}
+		movie_to_user_to_rating = {}
 
 		ratingsfile.seek(0)
 		next(a)
 		for row in a:
-			utility_matrix[int(row[0])][int(row[1])] = int(row[2])
+			user = int(row[0])
+			movie = int(row[1])
+			rating = float(row[2])
+
+			if user not in user_to_movie:
+				user_to_movie[user] = [movie]
+			else:
+				user_to_movie[user].append(movie)
+
+			if movie not in movie_to_user_to_rating:
+				movie_to_user_to_rating[movie] = {}
+				movie_to_user_to_rating[movie][user] = rating
+			else:
+				movie_to_user_to_rating[movie][user] = rating
 
 	ratingsfile.close()
 
-	print utility_matrix 
+	print len(user_to_movie)
+	print len(movie_to_user_to_rating)
 
 	# with open("data/ratings.csv") as ratingsfile:
 
