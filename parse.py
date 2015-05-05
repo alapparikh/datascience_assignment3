@@ -68,4 +68,9 @@ def loadData(title):
 
 if __name__ == '__main__':
 	user_to_movie, movie_to_user_to_rating = read_ratings()
+	print 'Read in'
+	dumpData('movie_to_user_to_rating', movie_to_user_to_rating)
+	print 'Dumped 1'
+	dumpData('user_to_movie', user_to_movie)
+	print 'Dumped 2'
 	

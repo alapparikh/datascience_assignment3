@@ -32,10 +32,11 @@ def prepData():
             movie_to_user_to_rating_true[mid] = {}
             for user in val.keys():                
                 #MAYBE OMIT THIS BECAUSE THE SPARSE POPULARIZATION OF -1s
-                movie_to_user_to_rating_predicted[mid][user] = -1
-                movie_to_user_to_rating_true[mid][user] = movie_to_user_to_rating[mid][user]
-                del movie_to_user_to_rating[mid][user]
-                user_to_movie[user].remove(mid)
+                if user > cutoff_user:
+                    movie_to_user_to_rating_predicted[mid][user] = -1
+                    movie_to_user_to_rating_true[mid][user] = movie_to_user_to_rating[mid][user]
+                    user_to_movie[user].remove(mid)
+                    del movie_to_user_to_rating[mid][user]
 
 def similarity (movie_id_1, movie_id_2):
     product = 0.0
@@ -55,6 +56,8 @@ def similarity (movie_id_1, movie_id_2):
         if user <= cutoff_user:
             magnitude2 = magnitude2 + movie_to_user_to_rating[movie_id_2][user]**2
 
+    if (float((math.sqrt(magnitude1) + math.sqrt(magnitude2)))):
+        return -1.
     return product/float((math.sqrt(magnitude1) + math.sqrt(magnitude2)))
 
 def predicted_rating (most_similar, uid):
@@ -64,14 +67,21 @@ def predicted_rating (most_similar, uid):
     for tupl in most_similar:
         numerator = numerator + movie_to_user_to_rating[tupl[1]][uid]*tupl[0]
         denominator = denominator + tupl[0]
+
+    if (denominator == 0):
+        return -1.
     return numerator/denominator
     
 if __name__ == '__main__':
+
     user_to_movie = loadData(u2m)
     movie_to_user_to_rating = loadData(m2u2r)
     
     print("getting data")
     prepData()
+    print 'Length of test dict: ', len(movie_to_user_to_rating_predicted)
+    print 'Length of true test dict: ', len(movie_to_user_to_rating_true)
+
     
     print("crunch time")
     maxSimilarities = []
@@ -99,7 +109,7 @@ print "test"
 addition = 0
 for mid in movie_to_user_to_rating_predicted.keys():
     for uid in movie_to_user_to_rating_predicted[mid]:
-        sum += (movie_to_user_to_rating_predicted[mid][uid] - movie_to_user_to_rating_true[mid][uid])**2
+        addition += (movie_to_user_to_rating_predicted[mid][uid] - movie_to_user_to_rating_true[mid][uid])**2
         
 RMSE = math.sqrt(addition)
 print RMSE
